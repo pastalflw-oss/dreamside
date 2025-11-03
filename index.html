@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Sanction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .container {
+            background: rgba(40, 40, 60, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b8b8d1;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        select, textarea, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(30, 30, 46, 0.8);
+            color: #fff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        select:focus, textarea:focus, input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        select.error, textarea.error, input.error {
+            border-color: #ef4444;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10b981;
+            color: #6ee7b7;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .message.info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid #3b82f6;
+            color: #93c5fd;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Formulaire de Sanction</h1>
+        
+        <form id="sanctionForm">
+            <div class="form-group">
+                <label for="staff">Nom du Staff *</label>
+                <select id="staff" required>
+                    <option value="">Chargement...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="type">Type de Sanction *</label>
+                <select id="type" required>
+                    <option value="">Sélectionnez un type</option>
+                    <option value="Avertissement">Avertissement</option>
+                    <option value="Mute">Mute</option>
+                    <option value="Kick">Kick</option>
+                    <option value="Ban">Ban</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="raison">Raison (minimum 5 caractères) *</label>
+                <textarea id="raison" required placeholder="Décrivez la raison de la sanction..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="text" id="date" readonly>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                Soumettre la sanction
+            </button>
+        </form>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        // ========================================
+        // CONFIGURATION - À PERSONNALISER
+        // ========================================
+        const SHEET_ID = '13g12HhkCHz7-kb7zViSTVIXB1wi5Qr78k8UE_sx-DQo';
+        const GENERAL_WEBHOOK_URL = 'https://discord.com/api/webhooks/1434889391142338722/zwcwbRGmPrqaaQw3DIseONOokMMFdoWm5x1UpWynOHvnii6IX5Y__59CFonW2fqJUQVN';
+        
+        // ========================================
+        // VARIABLES GLOBALES
+        // ========================================
+        const staffSelect = document.getElementById('staff');
+        const typeSelect = document.getElementById('type');
+        const raisonTextarea = document.getElementById('raison');
+        const dateInput = document.getElementById('date');
+        const submitBtn = document.getElementById('submitBtn');
+        const messageDiv = document.getElementById('message');
+        const form = document.getElementById('sanctionForm');
+        
+        // Stockage des webhooks spécifiques associés à chaque staff
+        let staffWebhooks = {};
+
+        // ========================================
+        // INITIALISATION AU CHARGEMENT DE LA PAGE
+        // ========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Remplir automatiquement la date du jour
+            setTodayDate();
+            
+            // Charger la liste des staff depuis le Google Sheet
+            loadStaffFromSheet();
+        });
+
+        // ========================================
+        // FONCTION : REMPLIR LA DATE AUTOMATIQUEMENT
+        // ========================================
+        function setTodayDate() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            dateInput.value = `${day}/${month}/${year}`;
+        }
+
+        // ========================================
+        // FONCTION : CHARGER LES STAFF DEPUIS LE GOOGLE SHEET
+        // ========================================
+        async function loadStaffFromSheet() {
+            showMessage('Chargement des membres du staff...', 'info');
+            
+            const sheetUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Staff`;
+            
+            try {
+                const response = await fetch(sheetUrl);
+                const text = await response.text();
+                
+                // Le format de réponse Google est du type : google.visualization.Query.setResponse({...})
+                // On extrait le JSON en retirant le wrapper
+                const jsonString = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/)[1];
+                const data = JSON.parse(jsonString);
+                
+                // Extraire les lignes du tableau
+                const rows = data.table.rows;
+                
+                // Vider le select et ajouter une option par défaut
+                staffSelect.innerHTML = '<option value="">Sélectionnez un staff</option>';
+                staffWebhooks = {};
+                
+                // Parcourir chaque ligne et créer les options
+                rows.forEach(row => {
+                    // row.c contient les cellules : [0] = Nom, [1] = Webhook, [2] = Rôle (optionnel)
+                    const staffName = row.c[0]?.v || '';
+                    const webhook = row.c[1]?.v || '';
+                    
+                    if (staffName && webhook) {
+                        // Créer l'option dans le select
+                        const option = document.createElement('option');
+                        option.value = staffName;
+                        option.textContent = staffName;
+                        staffSelect.appendChild(option);
+                        
+                        // Stocker le webhook associé
+                        staffWebhooks[staffName] = webhook;
+                    }
+                });
+                
+                hideMessage();
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement du Google Sheet:', error);
+                showMessage('Erreur : impossible de charger la liste des staff. Vérifiez l\'ID du Sheet.', 'error');
+                staffSelect.innerHTML = '<option value="">Erreur de chargement</option>';
+            }
+        }
+
+        // ========================================
+        // GESTION DE LA SOUMISSION DU FORMULAIRE
+        // ========================================
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Récupérer les valeurs
+            const staff = staffSelect.value.trim();
+            const type = typeSelect.value.trim();
+            const raison = raisonTextarea.value.trim();
+            const date = dateInput.value;
+            
+            // Validation des champs
+            let hasError = false;
+            
+            if (!staff) {
+                staffSelect.classList.add('error');
+                hasError = true;
+            } else {
+                staffSelect.classList.remove('error');
+            }
+            
+            if (!type) {
+                typeSelect.classList.add('error');
+                hasError = true;
+            } else {
+                typeSelect.classList.remove('error');
+            }
+            
+            if (!raison || raison.length < 5) {
+                raisonTextarea.classList.add('error');
+                hasError = true;
+            } else {
+                raisonTextarea.classList.remove('error');
+            }
+            
+            if (hasError) {
+                showMessage('Veuillez remplir tous les champs correctement (raison ≥ 5 caractères).', 'error');
+                return;
+            }
+            
+            // Désactiver le bouton pendant l'envoi
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Envoi en cours<span class="loading"></span>';
+            
+            // Créer l'objet JSON à envoyer
+            const sanctionData = {
+                staff: staff,
+                type: type,
+                raison: raison,
+                date: date
+            };
+            
+            // Récupérer le webhook spécifique du staff sélectionné
+            const specificWebhook = staffWebhooks[staff];
+            
+            if (!specificWebhook) {
+                showMessage('Erreur : webhook du staff introuvable.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Soumettre la sanction';
+                return;
+            }
+            
+            // Envoyer vers les deux webhooks en parallèle
+            try {
+                const results = await Promise.allSettled([
+                    sendToWebhook(GENERAL_WEBHOOK_URL, sanctionData),
+                    sendToWebhook(specificWebhook, sanctionData)
+                ]);
+                
+                // Vérifier si les deux envois ont réussi
+                const allSuccess = results.every(result => result.status === 'fulfilled');
+                
+                if (allSuccess) {
+                    showMessage('✅ Sanction envoyée avec succès !', 'success');
+                    // Réinitialiser uniquement le champ raison
+                    raisonTextarea.value = '';
+                } else {
+                    showMessage('⚠️ Échec d\'envoi sur l\'un des webhooks. Vérifiez les URLs.', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi:', error);
+                showMessage('❌ Erreur réseau lors de l\'envoi de la sanction.', 'error');
+            }
+            
+            // Réactiver le bouton
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Soumettre la sanction';
+        });
+
+        // ========================================
+        // FONCTION : ENVOYER VERS UN WEBHOOK
+        // ========================================
+        async function sendToWebhook(webhookUrl, data) {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response;
+        }
+
+        // ========================================
+        // FONCTION : AFFICHER UN MESSAGE
+        // ========================================
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        // ========================================
+        // FONCTION : MASQUER LE MESSAGE
+        // ========================================
+        function hideMessage() {
+            messageDiv.style.display = 'none';
+        }
+
+        // Retirer les classes d'erreur lors de la saisie
+        staffSelect.addEventListener('change', () => staffSelect.classList.remove('error'));
+        typeSelect.addEventListener('change', () => typeSelect.classList.remove('error'));
+        raisonTextarea.addEventListener('input', () => raisonTextarea.classList.remove('error'));
+    </script>
+</body>
+</html>
